@@ -1,1 +1,88 @@
 xinput set-prop "FTSC1000:00 2808:1015" 'Coordinate Transformation Matrix' 0 1 0 -1 0 1 0 0 1
+
+xrandr -o right
+
+GRUB_CMDLINE_LINUX="fbcon=rotate:1"
+
+I then edited /etc/lightdm/lightdm.conf:
+[SeatDefault]
+display-setup-script=/etc/lightdm/display-setup.sh
+
+/etc/lightdm/display-setup.sh
+#!/bin/sh
+
+# Fix screen rotation on login.
+xrandr --output DSI-1 --rotate right
+# Fix mouse.
+xinput set-prop "FTSC1000:00 2808:1015" --type=float "Coordinate Transformation Matrix" 0 1 0 -1 0 1 0 0 1
+
+apt install git tig ansible most vim-gnome tmux meld
+apt install debfoster zsh keepassx make openssh-server fonts-inconsolata
+ssh-keygen -t ed25519 -f ~/.ssh/id_primary
+chsh -s $(which zsh)
+mkdir projects
+cd projects
+git checkout git@github.com:kgaughan/dotfiles/
+cd dotfiles
+make install
+
+From:https://forums.lenovo.com/t5/Ubuntu/ubuntu-for-Miix-310-10ICR-Tablet/m-p/3385125?page=3#3996259
+
+/etc/initramfs-tools/modules, adding pwm_lpss_platform, and ran sudo update-initramfs -k all -u.
+---
+
+Hello
+
+ 
+
+I had very frequently a black screen at boot ( it can appends with liveUSB too) and i figured out that it was just a backlight problem (backlight totaly shut off) . my first not-so-solution was to supend-resume to get the screen back. but still no backlight control.
+
+ 
+
+then i found "pwm_lpss_platform"
+
+ 
+
+just add "pwm_lpss_platform" in /etc/initramfs-tools/modules
+
+then
+
+# sudo update-initramfs -k all -u
+and no more black screen again and moreover the brightness is now controlable.
+
+for information :  Wifi works out of the box since kernel 4.12
+
+For me  SDcard works since kernel 4.15
+
+for Ubuntu, to get a recent kernel :
+
+go to http://kernel.ubuntu.com/~kernel-ppa/mainline/
+
+go to the version you want. download in the same directory
+
+- linux-headers-xxxxx-all.deb
+- linux-headers-xxxxxx-generic_xxxxx_amd64.deb
+- linux-image-xxxxxx-generic_xxxxx_amd64.deb
+
+then
+
+sudo dpkg -i linux*.deb
+as a bonus i give you my GRUB_CMDLINE_LINUX_DEFAULT from /etc/default/grub :
+
+GRUB_CMDLINE_LINUX_DEFAULT="video=DSI-1:800x1280e acpi_osi= i915.modeset=1 fbcon=rotate:1  video.use_native_backlight=1 i915.enable_fbc=1 i915.enable_rc6=1 i915.semaphores=1 nospalsh quiet"
+
+video= and  fbcon=  are clear but i admit i don't really know the effect of the others. 
+
+I hope I help someone with these information.
+
+now...  can anybody help me to get my f***ing Bluetooth working ?
+
+I didn't manage to get it works with https://github.com/lwfinger/rtl8723bs_bt
+
+ 
+
+M.V.
+
+ 
+
+
